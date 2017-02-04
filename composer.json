@@ -1,0 +1,18 @@
+{
+    "name": "jiemo/xmpush",
+    "description": "米推送",
+    "type": "library",
+    "authors": [
+        {
+            "name": "p.cong",
+            "email": "congpeijun@jiemo.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-0": {
+            "xmpush\\": "./xmpush"
+        }
+    }
+}
