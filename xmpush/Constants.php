@@ -15,6 +15,7 @@ class Constants {
 	public static $packageName = '';
 	public static $bundle_id = '';
 	public static $secret = '';
+	public static $debug = false;
 	
 	const reg_url = '/v3/message/regid';
 	const alias_url = '/v3/message/alias';
