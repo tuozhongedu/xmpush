@@ -9,7 +9,7 @@
 namespace xmpush;
 
 class ErrorCode {
-	const Success = 0;
+    const Success = 0;
 }
 
 ?>
