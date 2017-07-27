@@ -82,7 +82,14 @@ class Constants {
     const X_PUSH_HOST_LIST = "X-PUSH-HOST-LIST";
     const HOST_RESPONSE_EXPECT_TIME = 5; // 响应时间低于这个值，host降权
     const X_PUSH_SDK_VERSION = "X-PUSH-SDK-VERSION";
-    const SDK_VERSION = "PHP_SDK_V2.2.17";
+    const SDK_VERSION = "PHP_SDK_V2.2.20";
+
+    const EXTRA_PARAM_NOTIFY_EFFECT = "notify_effect";
+    const NOTIFY_LAUNCHER_ACTIVITY = "1";
+    const NOTIFY_ACTIVITY = "2";
+    const NOTIFY_WEB = "3";
+    const EXTRA_PARAM_INTENT_URI = "intent_uri";
+    const EXTRA_PARAM_WEB_URI = "web_uri";
 
     public static function setPackage($package) {
         self::$packageName = $package;

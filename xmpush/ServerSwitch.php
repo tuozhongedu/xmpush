@@ -9,8 +9,8 @@
 
 namespace xmpush;
 
-
-class ServerSwitch {
+class ServerSwitch
+{
     /**
      * 存储message的server
      * @var array Server
@@ -23,8 +23,7 @@ class ServerSwitch {
     private $defaultServer;
     private $inited = false;
     private $lastRefreshTime;
-    static $REFRESH_SERVER_HOST_INTERVAL = 5 * 60 * 1000;
-
+    static $REFRESH_SERVER_HOST_INTERVAL = 300000; // 5 * 60 * 1000
 
     /**
      * @var ServerSwitch reference to singleton instance
@@ -36,7 +35,8 @@ class ServerSwitch {
      *
      * @return self
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (!isset(self::$instance)) {
             $class = __CLASS__;
             self::$instance = new $class;
@@ -49,15 +49,17 @@ class ServerSwitch {
      * 是否需要刷新host列表
      * @return bool
      */
-    public function needRefreshHostList() {
+    public function needRefreshHostList()
+    {
         return !$this->inited ||
-            $this->currentTimeMillis() - $this->lastRefreshTime >= self::$REFRESH_SERVER_HOST_INTERVAL;
+        $this->currentTimeMillis() - $this->lastRefreshTime >= self::$REFRESH_SERVER_HOST_INTERVAL;
     }
 
     /**
      * @param String $serverListStr : host:min:max:step,host:min:max:step,...
      */
-    public function initialize($serverListStr) {
+    public function initialize($serverListStr)
+    {
         if (!$this->needRefreshHostList()) {
             return;
         }
@@ -88,9 +90,15 @@ class ServerSwitch {
     /**
      * @param PushRequestPath $requestPath
      */
-    public function &selectServer($requestPath) {
+    /**
+     * @param PushRequestPath $requestPath
+     * @return Server
+     */
+    public function selectServer($requestPath)
+    {
         if (isset(Constants::$host)) {
-            return $this->specified->setHost(Constants::$host);
+            $this->specified->setHost(Constants::$host);
+            return $this->specified;
         }
         if (Constants::$sandbox) {
             return $this->sandbox;
@@ -107,7 +115,11 @@ class ServerSwitch {
 
     }
 
-    private function selectMsgServer() {
+    /**
+     * @return mixed|Server
+     */
+    private function &selectMsgServer()
+    {
         if (!Constants::$autoSwitchHost || !$this->inited) {
             return $this->defaultServer;
         }
@@ -131,7 +143,8 @@ class ServerSwitch {
     /**
      * 构造函数私有，不允许在外部实例化
      */
-    private function __construct() {
+    private function __construct()
+    {
         $this->feedback = new Server(Constants::HOST_PRODUCTION_FEEDBACK, 100, 100, 0, 0);
         $this->sandbox = new Server(Constants::HOST_SANDBOX, 100, 100, 0, 0);
         $this->specified = new Server(Constants::$host, 100, 100, 0, 0);
@@ -145,7 +158,8 @@ class ServerSwitch {
      *
      * @return void
      */
-    private function __clone() {
+    private function __clone()
+    {
     }
 
     /**
@@ -153,14 +167,16 @@ class ServerSwitch {
      *
      * @return void
      */
-    private function __wakeup() {
+    private function __wakeup()
+    {
     }
 
     /**
      * 获取当前时间(毫秒)
      * @return int
      */
-    private function currentTimeMillis() {
+    private function currentTimeMillis()
+    {
         return ceil(microtime(true) * 1000);
     }
 }

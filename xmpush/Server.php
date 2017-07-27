@@ -57,7 +57,6 @@ class Server {
      */
     public function setHost($host) {
         $this->host = $host;
-        return $this;
     }
 
     /**
@@ -65,6 +64,13 @@ class Server {
      */
     public function getPriority() {
         return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority($priority) {
+        $this->priority = $priority;
     }
 
     public function incrPriority() {

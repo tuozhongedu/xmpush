@@ -69,6 +69,7 @@ class HttpBase {
         if (Constants::$autoSwitchHost && ServerSwitch::getInstance()->needRefreshHostList()) {
             array_push($headers, Constants::X_PUSH_HOST_LIST . ': true');
         }
+        array_push($headers, "Expect:");
 
         // Open connection
         $ch = curl_init();
@@ -87,6 +88,7 @@ class HttpBase {
             curl_setopt($ch, CURLOPT_POST, false);
         }
         $content = curl_exec($ch);
+        $result = "";
         if ($content !== false) {
             $info = curl_getinfo($ch);
             $total_time = $info['total_time'];
@@ -95,15 +97,18 @@ class HttpBase {
             } else {
                 $server->incrPriority();
             }
+            list($responseHeaderStr, $result) = explode("\r\n\r\n", $content, 2);
+            $responseHeaders = $this->convertHeaders($responseHeaderStr);
+            if (array_key_exists(Constants::X_PUSH_HOST_LIST, $responseHeaders)) {
+                $serverListStr = $responseHeaders[Constants::X_PUSH_HOST_LIST];
+                ServerSwitch::getInstance()->initialize($serverListStr);
+            }
         } else {
             $server->decrPriority();
-        }
-
-        list($responseHeaderStr, $result) = explode("\r\n\r\n", $content, 2);
-        $responseHeaders = $this->convertHeaders($responseHeaderStr);
-        if (array_key_exists(Constants::X_PUSH_HOST_LIST, $responseHeaders)) {
-            $serverListStr = $responseHeaders[Constants::X_PUSH_HOST_LIST];
-            ServerSwitch::getInstance()->initialize($serverListStr);
+            $result = json_encode(array(
+                "code" => ErrorCode::NETWORK_ERROR_TIMEOUT,
+                "reason" => "network error or timeout"
+            ));
         }
 
         // Close connection
@@ -121,7 +126,13 @@ class HttpBase {
         $responseHeaders = array();
         foreach ($responseHeaderArr as $responseHeader) {
             $items = explode(":", $responseHeader, 2);
-            $responseHeaders[trim($items[0])] = trim($items[1]);
+            if ($items !== false) {
+                if (count($items) == 2) {
+                    $responseHeaders[trim($items[0])] = trim($items[1]);
+                } else {
+                    $responseHeaders["Header_" . count($responseHeaders)] = trim($responseHeader);
+                }
+            }
         }
         return $responseHeaders;
     }
